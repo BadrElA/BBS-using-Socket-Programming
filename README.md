@@ -11,6 +11,13 @@ On Linux / macOS / WSL Ubuntu
     run
         g++ -std=c++17 server.cpp -lpthread -o server
         ./server
+    navigate to and run client.py (using any python IDE) (vs code on top)
+    enter this in the terminal
+        > %connect 127.0.0.1 65432
+        > myname
+        > %join
+        > %post ; hello ; this is a test
+        > %message 1
 
 On Windows
 
