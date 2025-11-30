@@ -61,7 +61,7 @@ def run():
 			except:
 				print("could not connect to server")
 
-		# Command to join the default group
+		# Handle the %join command (join the default group)
 		elif command_args[0] == "%join":
 			if len(command_args) != 1:
 				print("usage: %join")
@@ -69,7 +69,7 @@ def run():
 			request = {"command": "%groupjoin", "group": "default"}
 			client_socket.sendall(json.dumps(request).encode('utf-8'))
 
-		# Command to post a message to the default group
+		# Handle the %post command (post a message to the default group)
 		elif command_args[0] == "%post":
 			post_command_args = command.split(";")
 			if len(post_command_args) != 3:
@@ -78,7 +78,7 @@ def run():
 			request = {"command": "%grouppost", "group": "default", "subject": post_command_args[1].strip(), "message": post_command_args[2].strip()}
 			client_socket.sendall(json.dumps(request).encode('utf-8'))
 
-		# Command to list users in the default group
+		# Handle the %users command (list users in the default group)
 		elif command_args[0] == "%users":
 			if len(command_args) != 1:
 				print("usage: %users")
@@ -86,7 +86,7 @@ def run():
 			request = {"command": "%groupusers", "group": "default"}
 			client_socket.sendall(json.dumps(request).encode('utf-8'))
 
-		# Command to leave the default group
+		# Handle the %leave command (leave the default group)
 		elif command_args[0] == "%leave":
 			if len(command_args) != 1:
 				print("usage: %leave")
@@ -94,7 +94,7 @@ def run():
 			request = {"command": "%groupleave", "group": "default"}
 			client_socket.sendall(json.dumps(request).encode('utf-8'))
 
-		# Command to get a specific message from the default group
+		# Handle the %message command (get a specific message from the default group)
 		elif command_args[0] == "%message":
 			if len(command_args) != 2:
 				print("usage: %message <message_id>")
@@ -102,19 +102,19 @@ def run():
 			request = {"command": "%groupmessage", "group": "default", "message_id": int(command_args[1].strip())}
 			client_socket.sendall(json.dumps(request).encode('utf-8'))
 
-		# Command to exit the client
+		# Handle the %exit command (disconnect from server)
 		elif command_args[0] == "%exit":
 			request = {"command": "%exit"}
 			client_socket.sendall(json.dumps(request).encode('utf-8'))
 			client_socket.close()
 			break
 
-		# Command to list all available groups on the server
+		# Handle the %groups command (list all available groups)
 		elif command_args[0] == "%groups":
 			request = {"command": "%groups"}
 			client_socket.sendall(json.dumps(request).encode('utf-8'))
 		
-		# Command to join a specific group
+		# Handle the %groupjoin command (join a specific group)
 		elif command_args[0] == "%groupjoin":
 			if len(command_args) != 2:
 				print("usage: %groupjoin <group_name>")
@@ -122,7 +122,7 @@ def run():
 			request = {"command": "%groupjoin", "group": command_args[1]}
 			client_socket.sendall(json.dumps(request).encode('utf-8'))
 		
-		# Command to post a message to a specific group
+		# Handle the %grouppost command (post a message to a specific group)
 		elif command_args[0] == "%grouppost":
 			post_command_args = command.split(";")
 			if len(post_command_args) != 4:
@@ -131,7 +131,7 @@ def run():
 			request = {"command": "%grouppost", "group": post_command_args[1].strip(), "subject": post_command_args[2].strip(), "message": post_command_args[3].strip()}
 			client_socket.sendall(json.dumps(request).encode('utf-8'))
 
-		# Command to list users in a specific group
+		# Handle the %groupusers command (list users in a specific group)
 		elif command_args[0] == "%groupusers":
 			if len(command_args) != 2:
 				print("usage: %groupusers <group_name>")
@@ -139,7 +139,7 @@ def run():
 			request = {"command": "%groupusers", "group": command_args[1]}
 			client_socket.sendall(json.dumps(request).encode('utf-8'))
 		
-		# Command to leave a specific group
+		# Handle the %groupleave command (leave a specific group)
 		elif command_args[0] == "%groupleave":
 			if len(command_args) != 2:
 				print("usage: %groupleave <group_name>")
@@ -147,7 +147,7 @@ def run():
 			request = {"command": "%groupleave", "group": command_args[1]}
 			client_socket.sendall(json.dumps(request).encode('utf-8'))
 		
-		# Command to get a specific message from a specific group
+		# Handle the %groupmessage command (get a specific message from a specific group)
 		elif command_args[0] == "%groupmessage":
 			if len(command_args) != 3:
 				print("usage: %groupmessage <group_name> <message_id>")
