@@ -22,12 +22,12 @@
 
 using json = nlohmann::json;
 
-// Small helper: send all of a string to a socket
+// Small helper to send all data in a string over a socket
 void send_all(int sock, const std::string &msg) {
     ::send(sock, msg.c_str(), msg.size(), 0);
 }
 
-// Safe trim (like Python .strip())
+// Safe trim function to remove leading/trailing whitespace
 std::string trim(const std::string &s) {
     if (s.empty()) return s;
 
@@ -46,7 +46,7 @@ std::string trim(const std::string &s) {
     return s.substr(start, end - start + 1);
 }
 
-// Get current time as "YYYY-MM-DD HH:MM:SS"
+// Get current timestamp as string in "YYYY-MM-DD HH:MM:SS" format
 std::string current_timestamp() {
     auto now = std::chrono::system_clock::now();
     std::time_t t = std::chrono::system_clock::to_time_t(now);
@@ -58,11 +58,12 @@ std::string current_timestamp() {
     return std::string(buf);
 }
 
+// BulletinBoard class representing a group
 class BulletinBoard {
 public:
     BulletinBoard() = default;
 
-    // Adds a user to the group. Doesn't allow if user is already in the group.
+    // Add a user to the group with their connection fd
     void group_join(const std::string &username, int conn_fd) {
         std::lock_guard<std::mutex> lock(mtx_);
         if (members_.count(username) > 0) {
@@ -72,7 +73,7 @@ public:
         members_[username] = conn_fd;
     }
 
-    // Adds a message to the group and sends a thumbnail to everyone.
+    // Add a post to the group and broadcast thumbnail to all members
     void group_post(const std::string &username,
                     const std::string &subject,
                     const std::string &message) {
@@ -99,7 +100,7 @@ public:
 
         messages_.push_back(post);
 
-        // Broadcast thumbnail to all group members
+        // Broadcast thumbnail to all members
         for (const auto &pair : members_) {
             int sock = pair.second;
             try {
@@ -110,8 +111,8 @@ public:
         }
     }
 
-    // Sends the list of users in the group.
-    // If username is empty, send to all members. Otherwise, send to that user only.
+    // Send the list of users to a specific user or broadcast to all
+    // If username is empty, broadcast to all members
     void group_users(const std::string &username = "") {
         std::lock_guard<std::mutex> lock(mtx_);
 
@@ -142,7 +143,7 @@ public:
         }
     }
 
-    // Removes a user from the group
+    // Remove a user from the group
     void group_leave(const std::string &username) {
         std::lock_guard<std::mutex> lock(mtx_);
 
@@ -155,7 +156,7 @@ public:
         members_.erase(it);
     }
 
-    // Sends the requested message to the user
+    // Send a specific message to a user
     void group_message(const std::string &username, int message_id) {
         std::lock_guard<std::mutex> lock(mtx_);
 
@@ -179,13 +180,13 @@ public:
         }
     }
 
-    // Sends the previous two messages (or fewer if less exist) to the user
+    // Send the previous two messages to a user upon joining
     void send_prev_two_messages(const std::string &username) {
         std::lock_guard<std::mutex> lock(mtx_);
 
         auto it = members_.find(username);
         if (it == members_.end()) {
-            return; // not in group; in Python this can only be called after join
+            return; // user not found
         }
         int sock = it->second;
 
@@ -198,7 +199,7 @@ public:
         }
     }
 
-    // Check if a username is in this group
+    // Check if a user is a member of this group
     bool has_member(const std::string &username) const {
         std::lock_guard<std::mutex> lock(mtx_);
         return members_.count(username) > 0;
@@ -210,10 +211,11 @@ private:
     mutable std::mutex mtx_;
 };
 
+// Main server class
 class Server {
 public:
     Server() {
-        // Initialize default groups like Python version (using unique_ptr)
+        // Initialize some default bulletin boards (groups)
         bulletinboards_.emplace("default", std::make_unique<BulletinBoard>());
         bulletinboards_.emplace("group1",  std::make_unique<BulletinBoard>());
         bulletinboards_.emplace("group2",  std::make_unique<BulletinBoard>());
@@ -277,9 +279,9 @@ public:
     }
 
 private:
-    // map of group name -> BulletinBoard instance (owned via unique_ptr)
+    // Map of group name to BulletinBoard instance
     std::map<std::string, std::unique_ptr<BulletinBoard>> bulletinboards_;
-    std::mutex boards_mtx_;  // protect access to bulletinboards_ structure
+    std::mutex boards_mtx_;  // Mutex to protect access to bulletinboards_
 
     bool username_exists_anywhere(const std::string &username) {
         std::lock_guard<std::mutex> lock(boards_mtx_);
@@ -292,7 +294,6 @@ private:
     }
 
     // Receive one "chunk" from client (up to 1024 bytes)
-    // This roughly mimics conn.recv(1024) from Python.
     std::string recv_request(int client_fd) {
         char buf[1024];
         ssize_t n = recv(client_fd, buf, sizeof(buf), 0);
@@ -303,7 +304,7 @@ private:
     }
 
     void handle_client(int client_fd) {
-        // Ask for username
+        // Get username
         send_all(client_fd, "Enter a username: \n");
 
         std::string username;
@@ -317,7 +318,7 @@ private:
             username = trim(std::string(buf, buf + n));
         }
 
-        // Check uniqueness across all groups
+        // Ensure username is unique across all groups
         while (username_exists_anywhere(username)) {
             send_all(client_fd,
                      "username already exists, please choose another username: \n");
@@ -418,7 +419,7 @@ private:
                 } else if (command == "%groupmessage") {
                     std::string group =
                         request.at("group").get<std::string>();
-                    // NOTE: Python client sends this as an int
+                    // message_id is 1-based index
                     int message_id =
                         request.at("message_id").get<int>();
 
@@ -433,7 +434,7 @@ private:
                     board->group_message(username, message_id);
 
                 } else if (command == "%exit") {
-                    // Remove user from any groups they’re in
+                    // Remove user from all groups
                     {
                         std::lock_guard<std::mutex> lock(boards_mtx_);
                         for (auto &pair : bulletinboards_) {
