@@ -2,19 +2,14 @@ import socket
 import threading
 import json
 
-"""
-Client-side implementation of a bulletin board system for interacting with a server.
-This module provides functionality for:
-- Connecting to the server
-- Joining and leaving groups
-- Posting messages to groups
-- Retrieving group information, such as members and messages
-"""
+# This module provides functionality for:
+#   Connecting to the server
+#   Joining and leaving groups
+#   Posting messages to groups
+#   Retrieving group information, such as members and messages
 
+# Function to handle receiving messages from the server
 def receive_messages(sock):
-	"""
-	continuously reads messages from the server and prints output on client side
-	"""
 	while True:
 		try:
 			# Receive message from server
@@ -29,37 +24,59 @@ def receive_messages(sock):
 			# Handle any exceptions (e.g., connection errors)
 			break
 
+# Main function to run the client
+# Every request sent to the server is formatted as a JSON object:
+# {
+#     "command": <command_name>,
+#     <additional fields depending on command>: <value>
+# }
+#
+# Supported Commands:
+#
+#   %connect <host> <port>
+#       - Establishes a TCP connection to the server at the specified host and port.
+#
+#   %join
+#       - Joins the default group ("default").
+#
+#   %post ; <subject> ; <message>
+#       - Posts a message with a subject and body to the default group.
+#
+#   %users
+#       - Requests the list of all users currently in the default group.
+#
+#   %leave
+#       - Leaves the default group.
+#
+#   %message <message_id>
+#       - Retrieves and displays a specific message (by ID) from the default group.
+#
+#   %exit
+#       - Disconnects from the server and terminates the client program.
+#
+#   %groups
+#       - Requests the list of all available groups on the server.
+#
+#   %groupjoin <group_name>
+#       - Joins the specified group.
+#
+#   %grouppost ; <groupname> ; <subject> ; <message>
+#       - Posts a message with subject and body to the specified group.
+#
+#   %groupusers <group_name>
+#       - Requests the list of users in the specified group.
+#
+#   %groupleave <group_name>
+#       - Leaves the specified group.
+#
+#   %groupmessage <group_name> <message_id>
+#       - Retrieves a specific message (by ID) from the specified group.
+#
 def run():
-	"""
-	this function runs continuously and it's main purpose is to parse the text the user types, 
-	and format it in a json-like way to send it to the server. this ensures that we stop errors before they
-	even reach the server.
-
-	this is basically the format of every request sent to the server:
-	{
-		"command": ...,
-		"command specific fields (group, message, subject, etc...)": ...,
-	}
-
-	Specific Command formats:
-        %connect <host> <port>           - Connects to the server.
-        %join                           - Joins the default group.
-        %post ; <subject> ; <message>   - Posts a message to the default group.
-        %users                          - Lists members of the default group.
-        %leave                          - Leaves the default group.
-        %message <message_id>           - Retrieves a specific message by ID.
-        %exit                           - Disconnects from the server and exits.
-        %groups                         - Lists all available groups on the server.
-        %groupjoin <group_name>         - Joins a specific group.
-        %grouppost ; <groupname> ; <subject> ; <message> - Posts a message to a specific group.
-        %groupusers <group_name>        - Lists members of a specific group.
-        %groupleave <group_name>        - Leaves a specific group.
-        %groupmessage <group_name> <message_id> - Retrieves a specific message from a group.
-	"""
 	client_socket = None # socket object for client-server communication
-	name_sent = False # flag to track if the username has been sent to the server
+	name_sent = False # track if the username has been sent to the server
 	while True:
-		# getting user input
+		# user input
 		command = input("> ")
 		command_args = command.split()
 
