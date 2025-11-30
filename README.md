@@ -5,9 +5,12 @@ Project 2 of Computer Networks
 How to run:
 
 On Linux / macOS / WSL 
-
-    g++ -std=c++17 server.cpp -lpthread -o server
-    ./server
+    
+    navigate to the correct folder
+        cd Repos/BBS-using-Socket-Programming/server
+    run
+        g++ -std=c++17 server.cpp -lpthread -o server
+        ./server
 
 On Windows
 
