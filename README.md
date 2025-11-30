@@ -4,7 +4,7 @@ Project 2 of Computer Networks
 
 How to run:
 
-On Linux / macOS / WSL 
+On Linux / macOS / WSL Ubuntu
     
     navigate to the correct folder
         cd Repos/BBS-using-Socket-Programming/server
