@@ -1,7 +1,7 @@
 # BBS-using-Socket-Programming
 Project 2 of Computer Networks
 
-Group Members: Badr | Jason Galanie | Colin Hill
+Group Members: Badr El Amri | Jason Galanie | Colin Hill
 
 Required dependencies:
 
