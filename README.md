@@ -1,43 +1,62 @@
 # BBS-using-Socket-Programming
 Project 2 of Computer Networks
 
+Required dependencies:
 
-How to run:
+    WSL (windows only)
+    g++
+    make
 
-On Linux / macOS / WSL Ubuntu
-    
-    navigate to the correct folder
-        cd Repos/BBS-using-Socket-Programming/server
-    run
-        g++ -std=c++17 server.cpp -lpthread -o server
-        ./server
-    navigate to and run client.py (using any python IDE) (vs code on top)
-    enter this in the terminal
-        > %connect 127.0.0.1 65432
-        > myname
-        > %join
-        > %post ; hello ; this is a test
-        > %message 1
+How to install dependencies:
 
-On Windows
-
+    Windows users only:
     open Terminal
-    install WSL
-        wsl --install
-    navigate to the code
+    install WSL (first time only)
+        wsl --install   
+    Run all commands from WSL bash
+
+    open Terminal (WSL bash for Windows users)
+    Navigate to server path
         cd Repos/BBS-using-Socket-Programming/server
-    install g++
+    install g++ and make (first time only)
         sudo apt update
-        sudo apt install g++
-    build server
-        g++ -std=c++17 server.cpp -lpthread -o server
-    run server
-        ./server
-    navigate to and run client.py (using any python IDE) (vs code on top)
-    enter this in the terminal
-        > %connect 127.0.0.1 65432
-        > myname
-        > %join
-        > %post ; hello ; this is a test
-        > %message 1
+        sudo apt install -y g++
+        sudo apt install -y make
+    
+START HERE IF WSL, g++ and make ARE ALREADY INSTALLED
+
+How to build and run server:
+    
+    in terminal/WSL at BBS-using-Socket-Programming/server:
+        make
+
+Run Client:
+
+    Navigate to and run gui_client.py 
+    
+    To Connect:
+        Enter Host (usually 127.0.0.1)
+        Enter Port (65432)
+        Enter a Username
+        Click Connect
+
+    To join a Group:
+    Enter a group name (ex: default)
+    Click Join Group
+
+    To post a Message:
+        Enter a Subject
+        Enter your Message
+        Click Post
+
+    To read a Message:
+        Enter group name
+        Enter the Message ID
+        Click Get Message
+
+    Other Actions:
+        List Users → shows users in the current group
+        List All Groups → shows all groups on the server
+        Exit (Server) → cleanly disconnects   
+
 
