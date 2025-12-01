@@ -1,6 +1,8 @@
 # BBS-using-Socket-Programming
 Project 2 of Computer Networks
 
+Group Members: Badr | Jason Galanie | Colin Hill
+
 Required dependencies:
 
     WSL (windows only)
