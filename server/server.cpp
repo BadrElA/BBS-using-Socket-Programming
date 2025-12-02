@@ -305,7 +305,7 @@ private:
 
     void handle_client(int client_fd) {
         // Get username
-        send_all(client_fd, "Enter a username: \n");
+        send_all(client_fd, "");
 
         std::string username;
         {
